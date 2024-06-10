@@ -17,4 +17,4 @@ jobs:
           esp_idf_version: v5.2
           target: esp32
           path: '.'
-          command: esptool.py build -DSDKCONFIG=sdkconfig.ci
+          command: esp-idf.py build -DSDKCONFIG=sdkconfig.ci
