@@ -46,7 +46,7 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           body: "ESP32 partition table"
-      - name: Upload partition-table.bin to release
+      - name: Upload firmware to release
         if: github.ref_type == 'tag'
         uses: svenstaro/upload-release-action@v2
         with:
