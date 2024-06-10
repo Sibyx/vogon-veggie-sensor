@@ -26,3 +26,33 @@ jobs:
             build/bootloader/bootloader.bin
             build/partition_table/partition-table.bin
             build/VogonVeggieSensorFirmware.bin
+      - name: Upload bootloader.bin to release
+        if: github.ref_type == 'tag'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/bootloader/bootloader.bin
+          asset_name: bootloader.bin
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "ESP32 bootloader"
+      - name: Upload partition-table.bin to release
+        if: github.ref_type == 'tag'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/partition_table/partition-table.bin
+          asset_name: partition-table.bin
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "ESP32 partition table"
+      - name: Upload partition-table.bin to release
+        if: github.ref_type == 'tag'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/VogonVeggieSensorFirmware.bin
+          asset_name: VogonVeggieSensorFirmware.bin
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "ESP32 firmware"
