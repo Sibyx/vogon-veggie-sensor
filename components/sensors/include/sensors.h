@@ -9,3 +9,4 @@
 
 _Noreturn
 void bmp280_task(void *pvParameters);
+void vcnl4040_task(void *pvParameters);

@@ -55,6 +55,16 @@ void app_main(void)
             APP_CPU_NUM
             );
 
+    xTaskCreatePinnedToCore(
+            vcnl4040_task,
+            "vcnl4040",
+            configMINIMAL_STACK_SIZE * 8,
+            NULL,
+            10,
+            NULL,
+            APP_CPU_NUM
+    );
+
     // Start the NimBLE host task
     nimble_port_freertos_init(bleprph_host_task);
 

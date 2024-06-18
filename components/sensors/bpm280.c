@@ -3,6 +3,10 @@
 
 static const char* TAG = "BPM280_MODULE";
 
+/**
+ * Datasheet: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf
+ * @param pvParameters
+ */
 _Noreturn void bmp280_task(void *pvParameters)
 {
     bmp280_params_t params;
@@ -27,11 +31,11 @@ _Noreturn void bmp280_task(void *pvParameters)
             continue;
         }
 
-        ESP_LOGD(TAG, "Pressure: %.2f Pa", pressure);
-        ESP_LOGD(TAG, "Temperature: %.2f C", temperature);
+        ESP_LOGI(TAG, "Pressure: %.2f Pa", pressure);
+        ESP_LOGI(TAG, "Temperature: %.2f C", temperature);
 
         if (bme280p) {
-            ESP_LOGD(TAG, "Humidity: %.2f%%", humidity);
+            ESP_LOGI(TAG, "Humidity: %.2f%%", humidity);
         }
 
         // Store measurements to shared memory

@@ -13,7 +13,7 @@ void update_advertisement_data(void) {
     adv_fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
     adv_fields.tx_pwr_lvl_is_present = 1;
     adv_fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
-    const char *name = "VOGON";
+    const char *name = "VOG1";
     adv_fields.name = (uint8_t *)name;
     adv_fields.name_len = strlen(name);
     adv_fields.name_is_complete = 1;
