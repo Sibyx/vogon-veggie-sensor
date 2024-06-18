@@ -2,6 +2,8 @@
 
 This changelog suppose to follow rules defined in the [changelog.md](https://changelog.md)
 
+## 0.3.0 - TBD
+
 ## 0.2.0 - 2024-06-18
 
 - **Added**: VCNL4040 support (experimental)

@@ -118,8 +118,9 @@ esp_err_t vcnl4040_read_white(vcnl4040_t *dev, uint16_t *data) {
 _Noreturn void vcnl4040_task(void *pvParameters)
 {
     vcnl4040_params_t params;
-    memset(&params, 0, sizeof(vcnl4040_t));
+    memset(&params, 0, sizeof(vcnl4040_params_t));
     vcnl4040_init_default_params(&params);
+
     params.ALS_CONF = VCNL4040_ALS_IT_640MS | VCNL4040_ALS_PERS_1 | VCNL4040_ALS_INT_ENABLE | VCNL4040_ALS_SD_POWER_ON;
     params.PS_CONF1 = VCNL4040_PS_DUTY_1_40 | VCNL4040_PS_PERS_1 | VCNL4040_PS_IT_1T | VCNL4040_PS_SD_OFF;
     params.PS_CONF2 = VCNL4040_PS_HD_12BIT | VCNL4040_PS_INT_WHEN_CLOSE;
