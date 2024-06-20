@@ -19,7 +19,7 @@ jobs:
           path: '.'
           command: idf.py build -DSDKCONFIG=sdkconfig.ci
       - name: Archive build output artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build
           path: |

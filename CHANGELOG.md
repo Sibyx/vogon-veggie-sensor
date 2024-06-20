@@ -2,7 +2,10 @@
 
 This changelog suppose to follow rules defined in the [changelog.md](https://changelog.md)
 
-## 0.3.0 - TBD
+## 0.3.0 - 2024-06-20
+
+- **Added**: SEN0605 support (experimental - not working...)
+- **Added**: Analog soil moisture sensor support
 
 ## 0.2.0 - 2024-06-18
 

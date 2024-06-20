@@ -104,15 +104,21 @@ esp_err_t vcnl4040_init(vcnl4040_t *dev, vcnl4040_params_t *params) {
 }
 
 esp_err_t vcnl4040_read_proximity(vcnl4040_t *dev, uint16_t *data) {
-    return vcnl4040_read(&dev->i2c_dev, VCNL4040_RD_REG_PS_DATA, data);
+    esp_err_t rs = vcnl4040_read(&dev->i2c_dev, VCNL4040_RD_REG_PS_DATA, data);
+    ESP_LOGD(TAG, "Proximity: %d", *data);
+    return rs;
 }
 
 esp_err_t vcnl4040_read_lux(vcnl4040_t *dev, uint16_t *data) {
-    return vcnl4040_read(&dev->i2c_dev, VCNL4040_RD_REG_ALS_DATA, data);
+    esp_err_t rs = vcnl4040_read(&dev->i2c_dev, VCNL4040_RD_REG_ALS_DATA, data);
+    ESP_LOGD(TAG, "Lux: %d", *data);
+    return rs;
 }
 
 esp_err_t vcnl4040_read_white(vcnl4040_t *dev, uint16_t *data) {
-    return vcnl4040_read(&dev->i2c_dev, VCNL4040_RD_REG_WHITE_DATA, data);
+    esp_err_t rs = vcnl4040_read(&dev->i2c_dev, VCNL4040_RD_REG_WHITE_DATA, data);
+    ESP_LOGD(TAG, "White: %d", *data);
+    return rs;
 }
 
 _Noreturn void vcnl4040_task(void *pvParameters)
@@ -139,24 +145,18 @@ _Noreturn void vcnl4040_task(void *pvParameters)
     {
         vTaskDelay(pdMS_TO_TICKS(CONFIG_SENSORS_SLEEP_PERIOD));
 
-        if (vcnl4040_read_proximity(&dev, &proximity) == ESP_OK)
+        if (vcnl4040_read_proximity(&dev, &proximity) != ESP_OK)
         {
-            ESP_LOGI(TAG, "Proximity: %d", proximity);
-        } else {
             ESP_LOGW(TAG, "Proximity reading failed");
         }
 
-        if (vcnl4040_read_lux(&dev, &lux) == ESP_OK)
+        if (vcnl4040_read_lux(&dev, &lux) != ESP_OK)
         {
-            ESP_LOGI(TAG, "Lux: %d", lux);
-        } else {
             ESP_LOGW(TAG, "Lux reading failed");
         }
 
-        if (vcnl4040_read_white(&dev, &white) == ESP_OK)
+        if (vcnl4040_read_white(&dev, &white) != ESP_OK)
         {
-            ESP_LOGI(TAG, "White: %d", white);
-        } else {
             ESP_LOGW(TAG, "White reading failed");
         }
 

@@ -31,13 +31,6 @@ _Noreturn void bmp280_task(void *pvParameters)
             continue;
         }
 
-        ESP_LOGI(TAG, "Pressure: %.2f Pa", pressure);
-        ESP_LOGI(TAG, "Temperature: %.2f C", temperature);
-
-        if (bme280p) {
-            ESP_LOGI(TAG, "Humidity: %.2f%%", humidity);
-        }
-
         // Store measurements to shared memory
         if (xSemaphoreTake(data_mutex, portMAX_DELAY) == pdTRUE) {
             shared_data.pressure = pressure;
