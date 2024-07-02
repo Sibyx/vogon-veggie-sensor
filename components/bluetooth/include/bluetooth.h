@@ -20,5 +20,5 @@ void bleprph_host_task(void *param);
 
 
 // Helpers
-void update_advertisement_data(void);
+void update_advertisement_data(protocol_parameter_t *parameter);
 

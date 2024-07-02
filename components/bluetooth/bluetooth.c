@@ -5,33 +5,49 @@ static const char* TAG = "BLE";
 
 static uint8_t ble_addr_type;
 
+void print_bytes_in_hex(uint8_t *data, size_t size) {
+    for (size_t i = 0; i < size; i++) {
+        printf("%02X", data[i]);
+        if (i < size - 1) {
+            printf(" ");
+        }
+    }
+    printf("\n");
+}
+
 
 // Function to update advertisement data
-void update_advertisement_data(void) {
+void update_advertisement_data(protocol_parameter_t *parameter) {
     struct ble_hs_adv_fields adv_fields;
     memset(&adv_fields, 0, sizeof(adv_fields));
     adv_fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
     adv_fields.tx_pwr_lvl_is_present = 1;
     adv_fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
-    const char *name = "VOG1";
+    const char *name = "VOG1"; // BLE Advertisement Device Name
     adv_fields.name = (uint8_t *)name;
     adv_fields.name_len = strlen(name);
     adv_fields.name_is_complete = 1;
 
-    // Format: P<float>T<float>H<float>
-    uint8_t mfg_data[12];
+    uint8_t *mfg_data;
+    uint8_t mfg_data_len = 0;
 
     if (xSemaphoreTake(data_mutex, portMAX_DELAY) == pdTRUE) {
-        memcpy(&mfg_data[0], &shared_data.pressure, sizeof(float));
-        memcpy(&mfg_data[4], &shared_data.temperature, sizeof(float));
-        memcpy(&mfg_data[8], &shared_data.humidity, sizeof(float));
+        create_mfg_data(parameter, &shared_data, &mfg_data, &mfg_data_len);
         xSemaphoreGive(data_mutex);
     } else {
         ESP_LOGE(TAG, "Unable to access shared data memory");
+        return;
     }
 
+//    printf("sensor: %d\n", parameter->sensor);
+//    printf("parameter: %d\n", parameter->parameter);
+//    printf("type: %d\n", parameter->type);
+//    printf("mfg_data_len: %d\n", mfg_data_len);
+//    printf("position: %d\n", parameter->position);
+    print_bytes_in_hex(mfg_data, mfg_data_len);
+
     adv_fields.mfg_data = mfg_data;
-    adv_fields.mfg_data_len = sizeof(mfg_data);
+    adv_fields.mfg_data_len = mfg_data_len;
 
     // Ensure the length of manufacturer data does not exceed 31 bytes
     if (adv_fields.mfg_data_len > BLE_HS_ADV_MAX_SZ) {
@@ -51,8 +67,10 @@ static void start_advertising(void) {
     memset(&adv_params, 0, sizeof(adv_params));
     adv_params.conn_mode = BLE_GAP_CONN_MODE_NON;
     adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
+    adv_params.itvl_min = CONFIG_BLUETOOTH_ADVERTISEMENT_MIN;
+    adv_params.itvl_max = CONFIG_BLUETOOTH_ADVERTISEMENT_MAX;
 
-    update_advertisement_data();
+    update_advertisement_data(&broadcasting_config.items[0]);
 
     int rc = ble_gap_adv_start(BLE_OWN_ADDR_PUBLIC, NULL, BLE_HS_FOREVER,
                                &adv_params, NULL, NULL);
@@ -65,14 +83,16 @@ static void start_advertising(void) {
 // Task to periodically update sensor values and advertisement data
 _Noreturn void update_sensor_values_task(void *pvParameters) {
     while (1) {
-        // Update advertisement data
-        update_advertisement_data();
+        for (int i = 0; i < broadcasting_config.size; i++) {
+            // Update advertisement data
+            update_advertisement_data(&broadcasting_config.items[i]);
 
-        // Log the updated values
-        ESP_LOGI(TAG, "Updated advertisement values");
+            // Log the updated values
+            ESP_LOGI(TAG, "Updated advertisement values");
 
-        // Wait for a while before updating again
-        vTaskDelay(10000 / portTICK_PERIOD_MS); // Update every 10 seconds
+            // Wait for a while before updating again
+            vTaskDelay(10000 / portTICK_PERIOD_MS); // Update every 10 seconds
+        }
     }
 }
 

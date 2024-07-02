@@ -143,7 +143,7 @@ _Noreturn void vcnl4040_task(void *pvParameters)
 
     while (1)
     {
-        vTaskDelay(pdMS_TO_TICKS(CONFIG_SENSORS_SLEEP_PERIOD));
+        vTaskDelay(pdMS_TO_TICKS(CONFIG_SENSORS_VCNL4040_SLEEP_PERIOD * 60 * 1000));
 
         if (vcnl4040_read_proximity(&dev, &proximity) != ESP_OK)
         {

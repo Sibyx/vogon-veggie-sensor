@@ -1,5 +1,4 @@
 menu "Sensors Configuration"
-
     config SENSORS_I2C_MASTER_SCL
         int "SCL GPIO Number"
         default 5 if IDF_TARGET_ESP8266
@@ -16,10 +15,27 @@ menu "Sensors Configuration"
         help
             GPIO number for I2C Master data line.
 
-    config SENSORS_SLEEP_PERIOD
-        int "Sensor sleep time"
-        default 500
+    config SENSORS_BPM280_SLEEP_PERIOD
+        int "BPM280 sleep time (min)"
+        default 10
         help
-            Time in ms between sensor measurements.
+            Time in minutes between measurement of BPM280.
 
+    config SENSORS_VCNL4040_SLEEP_PERIOD
+        int "VCNL4040 sleep time (min)"
+        default 10
+        help
+            Time in minutes between measurement of VCNL4040.
+
+    config SENSORS_SEN0605_SLEEP_PERIOD
+        int "SEN0605 sleep time (min)"
+        default 60
+        help
+            Time in minutes between measurement of SEN0605.
+
+    config SENSORS_MOISTURE_SLEEP_PERIOD
+        int "MOISTURE sleep time (min)"
+        default 60
+        help
+            Time in minutes between measurement of moisture.
 endmenu

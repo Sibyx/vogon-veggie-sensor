@@ -24,7 +24,7 @@ _Noreturn void bmp280_task(void *pvParameters)
 
     while (1)
     {
-        vTaskDelay(pdMS_TO_TICKS(CONFIG_SENSORS_SLEEP_PERIOD));
+        vTaskDelay(pdMS_TO_TICKS(CONFIG_SENSORS_BPM280_SLEEP_PERIOD * 60 * 1000));
         if (bmp280_read_float(&dev, &temperature, &pressure, &humidity) != ESP_OK)
         {
             ESP_LOGW(TAG, "Temperature/pressure reading failed");

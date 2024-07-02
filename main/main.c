@@ -24,11 +24,19 @@ void app_main(void)
         ESP_LOGE(TAG, "Unable to initialize shared memory mutex");
     }
 
-    // Initialize shared memory
+    // Measurement data
     // FIXME: probably not a good idea to use 0
     shared_data.humidity = 0;
     shared_data.temperature = 0;
     shared_data.pressure = 0;
+    shared_data.moisture = 0;
+    shared_data.lux = 0;
+    shared_data.potassium = 0;
+    shared_data.nitrogen = 0;
+    shared_data.phosphorous = 0;
+
+    // Broadcasting configuration
+    init_broadcasting_config(&broadcasting_config);
 
     // Initialize NVS
     rc = nvs_flash_init();

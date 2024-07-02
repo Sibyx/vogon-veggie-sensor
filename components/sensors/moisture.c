@@ -10,10 +10,11 @@ _Noreturn void moisture_task(void *pvParameters) {
     adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_12);
 
     while (1) {
-        vTaskDelay(pdMS_TO_TICKS(CONFIG_SENSORS_SLEEP_PERIOD));
+        // TODO: create MIN_TO_TICKS
+        vTaskDelay(pdMS_TO_TICKS(CONFIG_SENSORS_MOISTURE_SLEEP_PERIOD * 60 * 1000));
 
         int analog = adc1_get_raw(ADC1_CHANNEL_6);
-        double moisture_double = ceil(( 100 - ( (analog / 4095.00) * 100 ) ));
+        double moisture_double = ceil(( 100 - ( (analog / 4095.00) * 100 ) ) * 100);
         uint8_t moisture;
 
         if (moisture_double > UINT8_MAX) {
@@ -24,7 +25,7 @@ _Noreturn void moisture_task(void *pvParameters) {
             moisture = (uint8_t) moisture_double;
         }
 
-        ESP_LOGE(TAG, "Soil moisture: %d%%", moisture);
+        ESP_LOGD(TAG, "Soil moisture: %d%%", moisture);
 
         // Store measurements to shared memory
         if (xSemaphoreTake(data_mutex, portMAX_DELAY) == pdTRUE) {
