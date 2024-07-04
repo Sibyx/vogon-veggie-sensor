@@ -39,13 +39,6 @@ void update_advertisement_data(protocol_parameter_t *parameter) {
         return;
     }
 
-//    printf("sensor: %d\n", parameter->sensor);
-//    printf("parameter: %d\n", parameter->parameter);
-//    printf("type: %d\n", parameter->type);
-//    printf("mfg_data_len: %d\n", mfg_data_len);
-//    printf("position: %d\n", parameter->position);
-    print_bytes_in_hex(mfg_data, mfg_data_len);
-
     adv_fields.mfg_data = mfg_data;
     adv_fields.mfg_data_len = mfg_data_len;
 
@@ -82,7 +75,7 @@ static void start_advertising(void) {
 
 // Task to periodically update sensor values and advertisement data
 _Noreturn void update_sensor_values_task(void *pvParameters) {
-    while (1) {
+    while (true) {
         for (int i = 0; i < broadcasting_config.size; i++) {
             // Update advertisement data
             update_advertisement_data(&broadcasting_config.items[i]);
@@ -90,8 +83,9 @@ _Noreturn void update_sensor_values_task(void *pvParameters) {
             // Log the updated values
             ESP_LOGI(TAG, "Updated advertisement values");
 
-            // Wait for a while before updating again
-            vTaskDelay(10000 / portTICK_PERIOD_MS); // Update every 10 seconds
+            // Wait for a while before updating again - wait time is minimal update time
+            int wait_time = find_min(SLEEP_TIMES, SLEEP_TIMES_SIZE);
+            vTaskDelay(pdMS_TO_TICKS(wait_time * 60 * 1000));
         }
     }
 }

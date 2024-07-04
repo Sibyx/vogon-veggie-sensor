@@ -2,6 +2,13 @@
 
 This changelog suppose to follow rules defined in the [changelog.md](https://changelog.md)
 
+## 0.4.0 - 2024-07-04
+
+BLE Advertisement contains always only single measurement to comply with maximum manufacturer payload (31 bytes).
+
+- **Added**: VOG1 protocol implementation
+- **Added**: menuconfig configurations
+
 ## 0.3.0 - 2024-06-20
 
 - **Added**: SEN0605 support (experimental - not working...)

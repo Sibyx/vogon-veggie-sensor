@@ -8,6 +8,14 @@ shared_data_t shared_data;
 SemaphoreHandle_t data_mutex;
 broadcasting_config_t broadcasting_config;
 
+const int SLEEP_TIMES[] = {
+        CONFIG_SENSORS_BPM280_SLEEP_PERIOD,
+        CONFIG_SENSORS_MOISTURE_SLEEP_PERIOD,
+        CONFIG_SENSORS_SEN0605_SLEEP_PERIOD,
+        CONFIG_SENSORS_VCNL4040_SLEEP_PERIOD
+};
+const int SLEEP_TIMES_SIZE = 4;
+
 esp_err_t register_protocol_parameter(broadcasting_config_t *config, uint16_t sensor, uint8_t parameter, uint8_t position, uint8_t type) {
     // Allocate memory for the new item
     protocol_parameter_t *new_items = realloc(config->items, (config->size + 1) * sizeof(protocol_parameter_t));
@@ -73,14 +81,24 @@ void init_broadcasting_config(broadcasting_config_t *config) {
                     PROTOCOL_TYPE_FLOAT
             ));
 
-    // Sensor: ANALOG_SOIL_MOISTURE(0x06), Parameter: Soil moisture (0x01)
+    // Sensor: ANALOG_SOIL_MOISTURE(0x06), Parameter: Soil moisture (percentage) (0x01)
     ESP_ERROR_CHECK(
             register_protocol_parameter(
                     &broadcasting_config,
                     0x06,
                     0x1,
                     12,
-                    PROTOCOL_TYPE_UINT8
+                    PROTOCOL_TYPE_UINT16
+            ));
+
+    // Sensor: ANALOG_SOIL_MOISTURE(0x06), Parameter: Soil moisture (analog) (0x02)
+    ESP_ERROR_CHECK(
+            register_protocol_parameter(
+                    &broadcasting_config,
+                    0x06,
+                    0x2,
+                    14,
+                    PROTOCOL_TYPE_UINT16
             ));
 
     // Sensor: VCNL4040(0x05), Parameter: Lux (0x01)
@@ -89,7 +107,7 @@ void init_broadcasting_config(broadcasting_config_t *config) {
                     &broadcasting_config,
                     0x05,
                     0x1,
-                    13,
+                    16,
                     PROTOCOL_TYPE_UINT16
             ));
 
@@ -99,7 +117,7 @@ void init_broadcasting_config(broadcasting_config_t *config) {
                     &broadcasting_config,
                     0x04,
                     0x1,
-                    15,
+                    18,
                     PROTOCOL_TYPE_UINT16
             ));
 
@@ -109,7 +127,7 @@ void init_broadcasting_config(broadcasting_config_t *config) {
                     &broadcasting_config,
                     0x04,
                     0x2,
-                    17,
+                    20,
                     PROTOCOL_TYPE_UINT16
             ));
 
@@ -119,7 +137,7 @@ void init_broadcasting_config(broadcasting_config_t *config) {
                     &broadcasting_config,
                     0x04,
                     0x3,
-                    19,
+                    22,
                     PROTOCOL_TYPE_UINT16
             ));
 }
@@ -152,11 +170,43 @@ void create_mfg_data(protocol_parameter_t *parameter, shared_data_t *data, uint8
     }
 
     *mfg_data_len = sizeof(protocol_message_t) + payload_size;
-    *mfg_data = (uint8_t *) malloc(*mfg_data_len);
+    *mfg_data = (uint8_t *) malloc(*mfg_data_len * sizeof(uint8_t));
 
     // Copy header
     memcpy(*mfg_data, &message, sizeof(protocol_message_t));
 
     // Copy measurement value
-    memcpy(*mfg_data + sizeof(protocol_message_t), data + parameter->position, payload_size);
+    memcpy(*mfg_data + sizeof(protocol_message_t), ((uint8_t *) (data)) + parameter->position, payload_size);
+}
+
+int find_max(const int data[], int size) {
+    if (size <= 0) {
+        ESP_LOGD(TAG, "Invalid array size in find_max.");
+        return -1;
+    }
+
+    int max = data[0];
+    for (int i = 1; i < size; i++) {
+        if (data[i] > max) {
+            max = data[i];
+        }
+    }
+
+    return max;
+}
+
+int find_min(const int data[], int size) {
+    if (size <= 0) {
+        ESP_LOGD(TAG, "Invalid array size in find_max.");
+        return -1;
+    }
+
+    int min = data[0];
+    for (int i = 1; i < size; i++) {
+        if (data[i] < min) {
+            min = data[i];
+        }
+    }
+
+    return min;
 }

@@ -93,6 +93,10 @@ void app_main(void)
             APP_CPU_NUM
     );
 
+    // Constants are in minutes - we wait until are measurements are available before starting broadcast
+    int wait_time = find_max(SLEEP_TIMES, SLEEP_TIMES_SIZE) + 1; // +1min
+    vTaskDelay(pdMS_TO_TICKS(wait_time * 60 * 1000));
+
     // Start the NimBLE host task
     nimble_port_freertos_init(bleprph_host_task);
 
